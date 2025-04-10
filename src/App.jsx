@@ -5,20 +5,21 @@ export default function App() {
 
   useEffect(() => {
     let p5Instance;
+    let song;
+    let fft;
+    let spherePosition = { x: 400, y: 300 }; // 初期位置
+    let sphereSpeed = { x: 2, y: 2 }; // 初期速度
+    let sphereColor = { r: 255, g: 182, b: 193, a: 150 }; // パステルピンクの色
+    let sphereSize = 100; // 球体のサイズ
 
-    const sketch = (p) => {
-      let song;
-      let spherePosition = { x: 400, y: 300 }; // 初期位置
-      let sphereSpeed = { x: 2, y: 2 }; // 初期速度
-      let sphereColor = p.color(255, 182, 193, 150); // パステルピンクの色
-
+    p5Instance = new window.p5((p) => {
       p.preload = () => {
-        // 音楽ファイルは public/audio.mp3 に配置している前提
         song = p.loadSound("/audio.mp3");
       };
 
       p.setup = () => {
         p.createCanvas(800, 600).parent(canvasRef.current);
+        fft = new p5.FFT(0.8, 64); // FFTインスタンスを作成
         song.stop(); // 最初は音楽を停止
       };
 
@@ -27,6 +28,13 @@ export default function App() {
 
         // 音楽の再生が開始されていれば、球体の位置を動かす
         if (song.isPlaying()) {
+          // 音量取得
+          const spectrum = fft.analyze(); // スペクトルデータを取得
+          const volume = fft.getEnergy(20, 200); // 20Hz～200Hzの範囲で音量を取得
+
+          // 音量に応じて球体のサイズを変える
+          sphereSize = p.map(volume, 0, 255, 50, 150); // 音量によって球体のサイズを調整
+
           spherePosition.x += sphereSpeed.x;
           spherePosition.y += sphereSpeed.y;
 
@@ -39,20 +47,17 @@ export default function App() {
           }
 
           // 球体の色をランダムに変える
-          sphereColor = p.color(
-            p.random(180, 255),
-            p.random(180, 255),
-            p.random(180, 255),
-            150
-          );
+          sphereColor.r = p.random(180, 255);
+          sphereColor.g = p.random(180, 255);
+          sphereColor.b = p.random(180, 255);
 
-          p.fill(sphereColor); // 塗りつぶしの色を設定
+          p.fill(sphereColor.r, sphereColor.g, sphereColor.b, sphereColor.a); // 塗りつぶしの色を設定
           p.noStroke(); // 枠線を無しに
-          p.ellipse(spherePosition.x, spherePosition.y, 100, 100); // 球体を描く
+          p.ellipse(spherePosition.x, spherePosition.y, sphereSize, sphereSize); // 球体を描く
         } else {
           p.fill(255, 182, 193, 150); // 音楽が停止中はデフォルトの色
           p.noStroke();
-          p.ellipse(spherePosition.x, spherePosition.y, 100, 100);
+          p.ellipse(spherePosition.x, spherePosition.y, sphereSize, sphereSize);
         }
       };
 
@@ -64,10 +69,7 @@ export default function App() {
           song.play(); // 停止中なら再生
         }
       };
-    };
-
-    // グローバルに読み込んだ p5 (CDN経由で読み込むので window.p5 に存在する)
-    p5Instance = new window.p5(sketch);
+    });
 
     return () => {
       p5Instance.remove();
