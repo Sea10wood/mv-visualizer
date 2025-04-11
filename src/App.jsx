@@ -24,6 +24,7 @@ export default function App() {
       let fft;
       let beatDetector;
       let fireworks = [];
+      let ripples = [];
       const baseSize = 100;
       let currentSize = baseSize;
       let lastBeatTime = 0;
@@ -84,6 +85,47 @@ export default function App() {
 
         isDone() {
           return this.particles.length === 0;
+        }
+      }
+
+      class Ripple {
+        constructor(x, y, color) {
+          this.x = x;
+          this.y = y;
+          this.radius = 0;
+          this.alpha = 255;
+          this.color = color;
+          this.shape = p.random(["circle", "triangle"]);
+        }
+
+        update() {
+          this.radius += 5;
+          this.alpha -= 4;
+        }
+
+        show() {
+          p.noFill();
+          p.stroke(this.color, 100, 100, this.alpha);
+          p.strokeWeight(2);
+          if (this.shape === "circle") {
+            p.ellipse(this.x, this.y, this.radius * 2);
+          } else if (this.shape === "triangle") {
+            p.push();
+            p.translate(this.x, this.y);
+            p.beginShape();
+            for (let i = 0; i < 3; i++) {
+              let angle = p.TWO_PI / 3 * i;
+              let x = this.radius * p.cos(angle);
+              let y = this.radius * p.sin(angle);
+              p.vertex(x, y);
+            }
+            p.endShape(p.CLOSE);
+            p.pop();
+          }
+        }
+
+        isDone() {
+          return this.alpha <= 0;
         }
       }
 
@@ -153,7 +195,7 @@ export default function App() {
         const now = p.millis();
         const spacing = (p.width / 1024) * 1.5;
 
-                for (let i = 0; i < 1024; i++) {
+        for (let i = 0; i < 1024; i++) {
           const x = i * spacing;
           const amp = spectrum[i] || 0;
           const h = p.map(amp, 0, 255, 0, p.height / 2);
@@ -162,7 +204,6 @@ export default function App() {
           p.rect(x, p.height, spacing - 2, -h);
         }
 
-        
         for (let i = 0; i < 1024; i++) {
           const x = i * spacing;
           const amp = spectrum[i] || 0;
@@ -172,23 +213,22 @@ export default function App() {
           p.rect(p.width - x - spacing, 0, spacing - 2, h);
         }
 
-        
         if (beat.isBeat && now - lastBeatTime > 180) {
           currentSize = baseSize + 60;
           lastBeatTime = now;
           const fx = p.random(p.width * 0.2, p.width * 0.8);
           const fy = p.random(p.height * 0.2, p.height * 0.8);
           const color = p.random(360);
-          fireworks.push(new Firework(fx, fy, color));
+          ripples.push(new Ripple(fx, fy, color));
         } else {
           currentSize = p.lerp(currentSize, baseSize, 0.07);
         }
 
-        fireworks.forEach((fw) => {
-          fw.update();
-          fw.show();
+        ripples.forEach((ripple) => {
+          ripple.update();
+          ripple.show();
         });
-        fireworks = fireworks.filter((fw) => !fw.isDone());
+        ripples = ripples.filter((ripple) => !ripple.isDone());
 
         p.push();
         p.translate(p.width / 2, p.height / 2);
@@ -240,6 +280,7 @@ export default function App() {
       setIsPlaying(true);
     }
   };
+  
 
   return (
     <div className="App">
