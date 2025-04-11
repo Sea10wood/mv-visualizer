@@ -1,11 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./App.css";
+import { gsap } from "gsap"; 
+import SakuraFall from "./SakuraFall";
 
 export default function App() {
   const canvasRef = useRef(null);
   const p5InstanceRef = useRef(null);
   const songRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const wrapperRef = useRef(null);
 
   const createP5Instance = () => {
     return new window.p5((p) => {
@@ -190,6 +193,12 @@ export default function App() {
       p5InstanceRef.current = createP5Instance();
     }
 
+    gsap.fromTo(
+      wrapperRef.current, 
+      { opacity: 0 }, 
+      { opacity: 1, duration: 2, ease: "power2.out" }
+    );
+
     return () => {
       if (p5InstanceRef.current) {
         p5InstanceRef.current.remove();
@@ -213,7 +222,9 @@ export default function App() {
 
   return (
     <div className="App">
-      <div className="canvas-wrapper">
+      <SakuraFall />
+      <div className="screen-shadow" />
+      <div className="canvas-wrapper" ref={wrapperRef}>
         <div ref={canvasRef}></div>
       </div>
       <div className="play-button" onClick={togglePlay}>
