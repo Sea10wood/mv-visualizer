@@ -153,15 +153,26 @@ export default function App() {
         const now = p.millis();
         const spacing = (p.width / 1024) * 1.5;
 
+                for (let i = 0; i < 1024; i++) {
+          const x = i * spacing;
+          const amp = spectrum[i] || 0;
+          const h = p.map(amp, 0, 255, 0, p.height / 2);
+          p.noStroke();
+          p.fill(60, 100, 80, 100); 
+          p.rect(x, p.height, spacing - 2, -h);
+        }
+
+        
         for (let i = 0; i < 1024; i++) {
           const x = i * spacing;
           const amp = spectrum[i] || 0;
           const h = p.map(amp, 0, 255, 0, p.height / 2);
           p.noStroke();
-          p.fill(180, 50, 100, 100);
-          p.rect(x, p.height, spacing - 2, -h);
+          p.fill(180, 100, 100, 100); 
+          p.rect(p.width - x - spacing, 0, spacing - 2, h);
         }
 
+        
         if (beat.isBeat && now - lastBeatTime > 180) {
           currentSize = baseSize + 60;
           lastBeatTime = now;
