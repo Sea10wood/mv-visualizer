@@ -7,7 +7,6 @@ export default function App() {
   const songRef = useRef(null);
   const [rotation, setRotation] = useState(0);
 
-  // p5 のインスタンス生成とロジックの整理
   const createP5Instance = () => {
     return new window.p5((p) => {
       let song;
@@ -218,19 +217,35 @@ export default function App() {
   };
 
   return (
-    <div className="App" style={{ textAlign: "center",
-      display: "flex-column",
-      justifyContent: "center",
-      alignItems: "center",
-      minHeight: "100vh",
-      minWidth: "100vw",
-      backgroundColor: "#fdfdfd",
-      backgroundImage: `
-        linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px)
-      `,
-      backgroundSize: "20px 20px" }}>
-      <div ref={canvasRef}></div>
+    <div
+      className="App"
+      style={{
+        textAlign: "center",
+        display: "flex-column",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
+        minWidth: "100vw",
+        backgroundColor: "#fdfdfd",
+        paddingTop: "20px",
+        backgroundImage: `
+          linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px)
+        `,
+        backgroundSize: "20px 20px",
+      }}
+    >
+      <div
+        style={{
+          width: "800px",
+          height: "600px",
+          margin: "0 auto",
+          boxShadow: "0 10px 6px -6px #777",
+          background: "#f5f5f5",
+        }}
+      >
+        <div ref={canvasRef}></div>
+      </div>
       <div
         onClick={togglePlay}
         style={{
@@ -242,7 +257,7 @@ export default function App() {
           borderRadius: "50%",
           backgroundColor: "#444",
           cursor: "pointer",
-          marginBottom: "1rem",
+          marginTop: "20px",
         }}
       >
         {isPlaying ? (
