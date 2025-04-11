@@ -9,6 +9,14 @@ export default function App() {
   const songRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const wrapperRef = useRef(null);
+  const [audioFile, setAudioFile] = useState(null);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setAudioFile(file);
+    }
+  };
 
   const createP5Instance = () => {
     return new window.p5((p) => {
@@ -121,11 +129,13 @@ export default function App() {
       }
 
       p.preload = () => {
-        song = p.loadSound("/audio.mp3", () => {
-          console.log("Sound loaded");
-        }, (err) => {
-          console.error("Failed to load audio", err);
-        });
+        if (audioFile) {
+          song = p.loadSound(URL.createObjectURL(audioFile), () => {
+            console.log("Sound loaded");
+          }, (err) => {
+            console.error("Failed to load audio", err);
+          });
+        }
       };
 
       p.setup = () => {
@@ -205,7 +215,7 @@ export default function App() {
         p5InstanceRef.current = null;
       }
     };
-  }, []);
+  }, [audioFile]);
 
   const togglePlay = () => {
     const song = songRef.current;
@@ -246,6 +256,7 @@ export default function App() {
           />
         )}
       </div>
+      <input type="file" onChange={handleFileChange} accept="audio/*" className="input-audio" />
     </div>
   );
 }

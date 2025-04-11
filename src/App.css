@@ -132,3 +132,14 @@ html,
     transform: translateX(0);
   }
 }
+
+.input-audio {
+  position: absolute;
+  bottom: 20px; 
+  right: 5px;  
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  z-index: 10;
+}
