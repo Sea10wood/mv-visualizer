@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
+import "./App.css";
 
 export default function App() {
   const canvasRef = useRef(null);
   const p5InstanceRef = useRef(null);
-  const [isPlaying, setIsPlaying] = useState(false);
   const songRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const createP5Instance = () => {
     return new window.p5((p) => {
@@ -12,7 +13,7 @@ export default function App() {
       let fft;
       let beatDetector;
       let fireworks = [];
-      let baseSize = 100;
+      const baseSize = 100;
       let currentSize = baseSize;
       let lastBeatTime = 0;
       let rotation = 0;
@@ -52,13 +53,12 @@ export default function App() {
           const count = 50;
           for (let i = 0; i < count; i++) {
             const angle = p.random(p.TWO_PI);
-            const speed = type === 0
-              ? p.random(1, 4)
-              : type === 1
-              ? p.random(3, 6)
-              : p.random(2, 5);
-            const particleColor = type === 2 ? (i % 2 === 0 ? (color + 60) % 360 : color) : color;
-            this.particles.push(new Particle(x, y, angle, speed, particleColor));
+            const speed = p.random(2, 5);
+            const particleColor =
+              type === 2 && i % 2 === 0 ? (color + 60) % 360 : color;
+            this.particles.push(
+              new Particle(x, y, angle, speed, particleColor)
+            );
           }
         }
 
@@ -91,22 +91,23 @@ export default function App() {
         }
 
         update(fft) {
-          const e = fft.getEnergy(this.freq1, this.freq2);
-          const level = e / 255.0 || 0.0;
+          const energy = fft.getEnergy(this.freq1, this.freq2);
+          const level = energy / 255.0;
           let isBeat = false;
 
           if (level > this.threshold && level > this.minThreshold) {
             this.threshold = level * 1.05;
-            this.minThreshold = Math.max(this.minThreshold, level * this.minThresholdRate);
-            if (this.time > this.marginThresholdTime) {
-              isBeat = true;
-            }
+            this.minThreshold = Math.max(
+              this.minThreshold,
+              level * this.minThresholdRate
+            );
+            if (this.time > this.marginThresholdTime) isBeat = true;
             this.time = 0;
           } else {
             if (this.time === this.marginThresholdTime) {
               this.threshold -= this.marginThreshold;
             }
-            this.time += 1;
+            this.time++;
             if (this.time > this.holdTime) {
               this.threshold -= this.decayRate;
             }
@@ -134,18 +135,12 @@ export default function App() {
 
       p.draw = () => {
         p.background(0);
-        p.stroke(255);
-        p.noFill();
-        p.strokeWeight(2);
-        p.rect(1, 1, p.width - 2, p.height - 2);
-
         const spectrum = fft.analyze();
         const beat = beatDetector.update(fft);
         const now = p.millis();
-        const binCount = 1024;
-        const spacing = (p.width / binCount) * 1.5;
+        const spacing = (p.width / 1024) * 1.5;
 
-        for (let i = 0; i < binCount; i++) {
+        for (let i = 0; i < 1024; i++) {
           const x = i * spacing;
           const amp = spectrum[i] || 0;
           const h = p.map(amp, 0, 255, 0, p.height / 2);
@@ -206,6 +201,7 @@ export default function App() {
   const togglePlay = () => {
     const song = songRef.current;
     if (!song) return;
+
     if (song.isPlaying()) {
       song.pause();
       setIsPlaying(false);
@@ -216,49 +212,11 @@ export default function App() {
   };
 
   return (
-    <div
-      className="App"
-      style={{
-        textAlign: "center",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        minHeight: "100vh",
-        minWidth: "100vw",
-        backgroundColor: "#fdfdfd",
-        backgroundImage: `
-          linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px)
-        `,
-        backgroundSize: "20px 20px",
-      }}
-    >
-      <div
-        style={{
-          width: "800px",
-          height: "600px",
-          margin: "0 auto",
-          boxShadow: "0 10px 6px -6px #777",
-          background: "#f5f5f5",
-        }}
-      >
+    <div className="App">
+      <div className="canvas-wrapper">
         <div ref={canvasRef}></div>
       </div>
-      <div
-        onClick={togglePlay}
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-          width: "60px",
-          height: "60px",
-          borderRadius: "50%",
-          backgroundColor: "#444",
-          cursor: "pointer",
-          marginTop: "20px",
-        }}
-      >
+      <div className="play-button" onClick={togglePlay}>
         {isPlaying ? (
           <div style={{ display: "flex", gap: "6px" }}>
             <div style={{ width: "8px", height: "24px", backgroundColor: "#fff" }} />
@@ -267,8 +225,8 @@ export default function App() {
         ) : (
           <div
             style={{
-              width: "0",
-              height: "0",
+              width: 0,
+              height: 0,
               borderLeft: "20px solid #fff",
               borderTop: "12px solid transparent",
               borderBottom: "12px solid transparent",
