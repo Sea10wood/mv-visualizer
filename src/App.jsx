@@ -5,7 +5,6 @@ export default function App() {
   const p5InstanceRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const songRef = useRef(null);
-  const [rotation, setRotation] = useState(0);
 
   const createP5Instance = () => {
     return new window.p5((p) => {
@@ -16,6 +15,7 @@ export default function App() {
       let baseSize = 100;
       let currentSize = baseSize;
       let lastBeatTime = 0;
+      let rotation = 0;
 
       class Particle {
         constructor(x, y, angle, speed, color) {
@@ -63,16 +63,12 @@ export default function App() {
         }
 
         update() {
-          for (const p of this.particles) {
-            p.update();
-          }
+          this.particles.forEach((p) => p.update());
           this.particles = this.particles.filter((p) => !p.isDead());
         }
 
         show() {
-          for (const p of this.particles) {
-            p.show();
-          }
+          this.particles.forEach((p) => p.show());
         }
 
         isDone() {
@@ -121,7 +117,11 @@ export default function App() {
       }
 
       p.preload = () => {
-        song = p.loadSound("/audio.mp3", () => console.log("Sound loaded successfully"), (err) => console.error("Error loading sound:", err));
+        song = p.loadSound("/audio.mp3", () => {
+          console.log("Sound loaded");
+        }, (err) => {
+          console.error("Failed to load audio", err);
+        });
       };
 
       p.setup = () => {
@@ -134,8 +134,8 @@ export default function App() {
 
       p.draw = () => {
         p.background(0);
-        p.noFill();
         p.stroke(255);
+        p.noFill();
         p.strokeWeight(2);
         p.rect(1, 1, p.width - 2, p.height - 2);
 
@@ -165,16 +165,16 @@ export default function App() {
           currentSize = p.lerp(currentSize, baseSize, 0.07);
         }
 
-        for (const fw of fireworks) {
+        fireworks.forEach((fw) => {
           fw.update();
           fw.show();
-        }
+        });
         fireworks = fireworks.filter((fw) => !fw.isDone());
 
         p.push();
         p.translate(p.width / 2, p.height / 2);
-        if (isPlaying) {
-          setRotation((prevRotation) => prevRotation + 0.02);
+        if (song && song.isPlaying()) {
+          rotation += 0.02;
         }
         p.rotate(rotation);
         p.beginShape();
@@ -206,7 +206,6 @@ export default function App() {
   const togglePlay = () => {
     const song = songRef.current;
     if (!song) return;
-
     if (song.isPlaying()) {
       song.pause();
       setIsPlaying(false);
@@ -221,13 +220,13 @@ export default function App() {
       className="App"
       style={{
         textAlign: "center",
-        display: "flex-column",
+        display: "flex",
+        flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
         minHeight: "100vh",
         minWidth: "100vw",
         backgroundColor: "#fdfdfd",
-        paddingTop: "20px",
         backgroundImage: `
           linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
           linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px)
