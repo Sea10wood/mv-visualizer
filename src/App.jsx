@@ -179,7 +179,7 @@ export default function App() {
           });
         }
       };
-
+      
       p.setup = () => {
         p.createCanvas(800, 600).parent(canvasRef.current);
         fft = new p5.FFT(0.9, 1024);
@@ -309,6 +309,7 @@ export default function App() {
         )}
       </div>
       <input type="file" onChange={handleFileChange} accept="audio/*" className="input-audio" />
+      <img src="鉛筆.png" alt="鉛筆" className="pencil-image" />
     </div>
   );
 }

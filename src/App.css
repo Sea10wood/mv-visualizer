@@ -143,3 +143,13 @@ html,
   font-size: 14px;
   z-index: 10;
 }
+
+.pencil-image {
+  position: absolute;
+  bottom: 90px;
+  left: 20px;
+  transform: rotate(55deg);
+  width: 24vw; 
+  height: auto;
+  z-index: 10;
+}
