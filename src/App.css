@@ -153,3 +153,75 @@ html,
   height: auto;
   z-index: 10;
 }
+
+.clock-wrapper {
+  position: absolute;
+  top: 50%; 
+  right: 60%;
+  width: 120px;
+  height: 120px;
+  z-index: 10; 
+}
+
+.clock {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 4px solid white;
+  border-radius: 50%;
+  z-index: -1; 
+}
+
+.hand {
+  position: absolute;
+  width: 2px;
+  height: 50%;
+  background-color: white;
+  top: 0;
+  left: 50%;
+  transform-origin: center bottom;
+  transform: rotate(0deg);
+}
+
+.hand.hour {
+  height: 35%;
+  background-color: #aaa;
+}
+
+.hand.minute {
+  height: 45%;
+  background-color: #ccc;
+}
+
+.hand.second {
+  height: 50%;
+  background-color: red;
+}
+
+.canvas-page {
+  text-align: center;
+}
+
+.next-button {
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  width: 50px;
+  height: 50px;
+  background-color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.next-button:before {
+  content: "▶";
+  font-size: 24px;
+  color: #000;
+}
+
+
